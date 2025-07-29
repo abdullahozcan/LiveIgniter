@@ -1,0 +1,75 @@
+# Composer dependencies
+/vendor/
+composer.lock
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# PHP files
+*.log
+*.tmp
+*.temp
+
+# Test coverage reports
+/coverage/
+/build/
+/.phpunit.result.cache
+phpunit.xml
+
+# Cache and temporary files
+/cache/
+/tmp/
+/temp/
+.cache
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Node.js (if you add any build tools later)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+/dist/
+/public/build/
+
+# Backup files
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+
+# Package files
+*.zip
+*.tar.gz
+*.rar
+
+# Documentation build
+/docs/_build/
+
+# PHPStorm
+.phpstorm.meta.php
+
+# Composer backup file
+composer.json.new
+
+# Local development files
+/examples/test/
+/sandbox/
