@@ -91,32 +91,81 @@ class Publish extends BaseCommand
      */
     protected function publishConfig(bool $force): void
     {
+        // Publish LiveIgniter config
         $sourceConfig = __DIR__ . '/../Config/LiveIgniter.php';
         $targetConfig = APPPATH . 'Config/LiveIgniter.php';
 
         if (file_exists($targetConfig) && !$force) {
             CLI::write('⚠ Config file already exists: ' . $targetConfig, 'yellow');
             CLI::write('Use --force to overwrite existing files.', 'yellow');
-            return;
+        } else {
+            // Ensure target directory exists
+            $targetDir = dirname($targetConfig);
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
+
+            // Read source config and modify namespace
+            $configContent = file_get_contents($sourceConfig);
+            $configContent = str_replace('namespace LiveIgniter\Config;', 'namespace Config;', $configContent);
+            $configContent = str_replace('use CodeIgniter\Config\BaseConfig;', "use CodeIgniter\Config\BaseConfig;\nuse LiveIgniter\Config\LiveIgniter as BaseLiveIgniter;", $configContent);
+            $configContent = str_replace('class LiveIgniter extends BaseConfig', 'class LiveIgniter extends BaseLiveIgniter', $configContent);
+
+            if (file_put_contents($targetConfig, $configContent) === false) {
+                throw new \RuntimeException("Could not create config file: {$targetConfig}");
+            }
+
+            CLI::write("✓ Published config: {$targetConfig}", 'green');
         }
-
-        // Ensure target directory exists
-        $targetDir = dirname($targetConfig);
-        if (!is_dir($targetDir)) {
-            mkdir($targetDir, 0755, true);
+        
+        // Publish Services extension
+        $sourceServices = __DIR__ . '/../Config/AppServices.php';
+        $targetServices = APPPATH . 'Config/Services.php';
+        
+        if (!file_exists($targetServices)) {
+            // If Services.php doesn't exist, create it with our content
+            $servicesContent = file_get_contents($sourceServices);
+            
+            if (file_put_contents($targetServices, $servicesContent) === false) {
+                throw new \RuntimeException("Could not create services file: {$targetServices}");
+            }
+            
+            CLI::write("✓ Created services: {$targetServices}", 'green');
+        } else {
+            // If Services.php exists, check if our method is already there
+            $existingContent = file_get_contents($targetServices);
+            
+            if (strpos($existingContent, 'liveigniterManager') === false) {
+                // Add our method to existing Services class
+                $methodCode = '
+    /**
+     * Get LiveIgniter Component Manager instance
+     */
+    public static function liveigniterManager(bool $getShared = true): \LiveIgniter\ComponentManager
+    {
+        if ($getShared) {
+            return static::getSharedInstance(\'liveigniterManager\');
         }
-
-        // Read source config and modify namespace
-        $configContent = file_get_contents($sourceConfig);
-        $configContent = str_replace('namespace LiveIgniter\Config;', 'namespace Config;', $configContent);
-        $configContent = str_replace('use CodeIgniter\Config\BaseConfig;', "use CodeIgniter\Config\BaseConfig;\nuse LiveIgniter\Config\LiveIgniter as BaseLiveIgniter;", $configContent);
-        $configContent = str_replace('class LiveIgniter extends BaseConfig', 'class LiveIgniter extends BaseLiveIgniter', $configContent);
-
-        if (file_put_contents($targetConfig, $configContent) === false) {
-            throw new \RuntimeException("Could not create config file: {$targetConfig}");
+        
+        return new \LiveIgniter\ComponentManager();
+    }';
+                
+                // Insert before the last closing brace
+                $pos = strrpos($existingContent, '}');
+                if ($pos !== false) {
+                    $newContent = substr_replace($existingContent, $methodCode . "\n}", $pos, 1);
+                    
+                    if ($force || CLI::prompt('Services.php exists. Add LiveIgniter service method?', ['y', 'n']) === 'y') {
+                        if (file_put_contents($targetServices, $newContent) === false) {
+                            throw new \RuntimeException("Could not update services file: {$targetServices}");
+                        }
+                        CLI::write("✓ Updated services: {$targetServices}", 'green');
+                    }
+                }
+            } else {
+                CLI::write('⚠ LiveIgniter service method already exists in Services.php', 'yellow');
+            }
         }
-
-        CLI::write("✓ Published config: {$targetConfig}", 'green');
     }
 
     /**

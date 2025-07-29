@@ -21,4 +21,12 @@ class Services extends BaseService
         
         return new ComponentManager();
     }
+    
+    /**
+     * Get component manager (alias)
+     */
+    public static function componentManager(bool $getShared = true): ComponentManager
+    {
+        return static::liveigniterManager($getShared);
+    }
 }

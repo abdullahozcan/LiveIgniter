@@ -30,13 +30,32 @@ abstract class LiveComponent
     /**
      * Component manager instance
      */
-    protected ComponentManager $manager;
+    protected ?ComponentManager $manager = null;
     
     public function __construct()
     {
         $this->componentId = $this->generateComponentId();
         $this->renderer = service('renderer');
-        $this->manager = service('liveigniter.manager');
+        
+        // Try to get the manager from different service methods
+        try {
+            // Try CodeIgniter's service container first
+            if (function_exists('service')) {
+                $this->manager = service('liveigniterManager');
+            }
+            
+            // If that fails, try our custom services
+            if ($this->manager === null) {
+                $this->manager = \LiveIgniter\Config\Services::liveigniterManager();
+            }
+        } catch (\Exception $e) {
+            // Final fallback to creating a new instance
+            $this->manager = new ComponentManager();
+        }
+        
+        if ($this->manager === null) {
+            $this->manager = new ComponentManager();
+        }
         
         $this->mount();
     }

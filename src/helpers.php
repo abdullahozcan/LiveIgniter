@@ -8,7 +8,18 @@ if (!function_exists('liveigniter')) {
      */
     function liveigniter(): ComponentManager
     {
-        return \Config\Services::liveigniterManager();
+        try {
+            // Try CodeIgniter's service container first
+            if (function_exists('service')) {
+                return service('liveigniterManager');
+            }
+            
+            // Fallback to our custom services
+            return \LiveIgniter\Config\Services::liveigniterManager();
+        } catch (\Exception $e) {
+            // Final fallback to creating a new instance
+            return new ComponentManager();
+        }
     }
 }
 
