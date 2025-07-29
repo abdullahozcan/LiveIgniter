@@ -13,6 +13,8 @@ class Counter extends LiveComponent
 {
     public int $count = 0;
     public string $message = 'Hello from LiveIgniter!';
+    public string $tempMessage = '';
+    public bool $additionalContentLoaded = false;
     
     public function mount(): void
     {
@@ -41,10 +43,65 @@ class Counter extends LiveComponent
     {
         $this->count = 0;
         $this->message = 'Counter reset!';
+        $this->additionalContentLoaded = false;
     }
     
-    public function setMessage(string $message): void
+    public function setMessage(?string $message = null): void
     {
-        $this->message = $message;
+        // Use tempMessage if no parameter provided
+        $newMessage = $message ?? $this->tempMessage;
+        
+        if (!empty($newMessage)) {
+            $this->message = $newMessage;
+            $this->tempMessage = ''; // Clear the temp message
+        }
+    }
+    
+    public function refresh(): void
+    {
+        // Refresh component data - could fetch from database
+        $this->message = 'Refreshed at ' . date('H:i:s');
+    }
+    
+    public function loadAdditionalContent(): void
+    {
+        // Simulate loading additional content
+        if (!$this->additionalContentLoaded) {
+            $this->additionalContentLoaded = true;
+            $this->message = 'Additional content loaded!';
+        }
+    }
+    
+    public function updateMessage(string $newMessage): void
+    {
+        $this->message = $newMessage;
+    }
+    
+    /**
+     * Handle form submission
+     */
+    public function handleFormSubmit(array $formData): void
+    {
+        if (isset($formData['message'])) {
+            $this->setMessage($formData['message']);
+        }
+    }
+    
+    /**
+     * Handle keyboard shortcut
+     */
+    public function handleKeyPress(string $key): void
+    {
+        switch ($key) {
+            case 'Enter':
+                $this->increment();
+                break;
+            case 'Escape':
+                $this->reset();
+                break;
+            case ' ': // Space
+                $this->increment();
+                break;
+        }
     }
 }

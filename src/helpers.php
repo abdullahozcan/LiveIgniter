@@ -39,9 +39,11 @@ if (!function_exists('live_emit')) {
     }
 }
 
+// Backwards compatibility - these will generate the old-style attributes
 if (!function_exists('live_wire')) {
     /**
-     * Generate wire directive attributes for HTML elements
+     * Generate wire directive attributes for HTML elements (legacy)
+     * Use igniter:click="method" directly instead
      * 
      * @param string $method Method name to call
      * @param array $params Parameters to pass
@@ -49,59 +51,61 @@ if (!function_exists('live_wire')) {
      */
     function live_wire(string $method, array $params = []): string
     {
-        $attributes = ['x-on:click' => "callLiveMethod('{$method}', " . json_encode($params) . ")"];
-        
-        $result = '';
-        foreach ($attributes as $key => $value) {
-            $result .= " {$key}=\"{$value}\"";
+        $methodCall = $method;
+        if (!empty($params)) {
+            $methodCall .= '(' . implode(', ', array_map(function($param) {
+                return is_string($param) ? "'{$param}'" : $param;
+            }, $params)) . ')';
         }
         
-        return $result;
+        return " igniter:click=\"{$methodCall}\"";
     }
 }
 
 if (!function_exists('live_model')) {
     /**
-     * Generate model binding directive for form inputs
+     * Generate model binding directive for form inputs (legacy)
+     * Use igniter:model="property" directly instead
      * 
      * @param string $property Property name to bind
      * @return string HTML attributes
      */
     function live_model(string $property): string
     {
-        return " x-model=\"{$property}\" x-on:input=\"updateProperty('{$property}', \$event.target.value)\"";
+        return " igniter:model=\"{$property}\"";
     }
 }
 
 if (!function_exists('live_loading')) {
     /**
-     * Generate loading state directive
+     * Generate loading state directive (legacy)
+     * Use igniter:loading="method" directly instead
      * 
      * @param string $target Target method or property
      * @return string HTML attributes
      */
-    function live_loading(string $target = ''): string
+    function live_loading(string $target = 'any'): string
     {
-        $directive = $target ? "x-show=\"loading === '{$target}'\"" : "x-show=\"loading\"";
-        return " {$directive}";
+        return " igniter:loading=\"{$target}\"";
     }
 }
 
 if (!function_exists('live_offline')) {
     /**
-     * Generate offline state directive
+     * Generate offline state directive (legacy)
+     * Use igniter:offline directly instead
      * 
      * @return string HTML attributes
      */
     function live_offline(): string
     {
-        return " x-show=\"offline\"";
+        return " igniter:offline";
     }
 }
 
 if (!function_exists('live_ignore')) {
     /**
-     * Generate ignore directive to prevent LiveIgniter processing
+     * Generate ignore directive to prevent LiveIgniter processing (legacy)
      * 
      * @return string HTML attributes
      */
@@ -113,7 +117,7 @@ if (!function_exists('live_ignore')) {
 
 if (!function_exists('live_key')) {
     /**
-     * Generate key directive for list items
+     * Generate key directive for list items (legacy)
      * 
      * @param mixed $key Unique key for the item
      * @return string HTML attributes
@@ -126,27 +130,29 @@ if (!function_exists('live_key')) {
 
 if (!function_exists('live_poll')) {
     /**
-     * Generate polling directive
+     * Generate polling directive (legacy)
+     * Use igniter:poll="30:refresh" directly instead
      * 
-     * @param int $interval Polling interval in milliseconds
+     * @param int $interval Polling interval in seconds
      * @param string $method Method to call
      * @return string HTML attributes
      */
     function live_poll(int $interval, string $method = 'refresh'): string
     {
-        return " x-init=\"setInterval(() => callLiveMethod('{$method}'), {$interval})\"";
+        return " igniter:poll=\"{$interval}:{$method}\"";
     }
 }
 
 if (!function_exists('live_lazy')) {
     /**
-     * Generate lazy loading directive
+     * Generate lazy loading directive (legacy)
+     * Use igniter:lazy="method" directly instead
      * 
      * @param string $method Method to call when element becomes visible
      * @return string HTML attributes
      */
     function live_lazy(string $method): string
     {
-        return " x-intersect=\"callLiveMethod('{$method}')\"";
+        return " igniter:lazy=\"{$method}\"";
     }
 }

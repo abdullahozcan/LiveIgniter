@@ -254,7 +254,8 @@ PHP;
         return <<<PHP
 <div id="<?= \$componentId ?>" class="live-component {$viewName}-component" x-data="{
     message: '<?= esc(\$message) ?>',
-    loading: false
+    loading: false,
+    tempMessage: ''
 }">
     <div class="card">
         <div class="card-header">
@@ -270,31 +271,33 @@ PHP;
                         id="message-input"
                         class="form-control"
                         placeholder="Enter new message..."
-                        x-model="tempMessage"
+                        igniter:model="tempMessage"
                     >
                     <button 
-                        <?= live_wire('updateMessage', ['\$event.target.previousElementSibling.value']) ?>
+                        igniter:click="updateMessage"
+                        igniter:target="updateMessage"
                         class="btn btn-primary"
                         :disabled="loading"
                     >
-                        <span <?= live_loading('updateMessage') ?>>
+                        <span igniter:loading="updateMessage">
                             <i class="spinner-border spinner-border-sm me-1"></i>
                         </span>
-                        Update
+                        <span igniter:loading.remove="updateMessage">Update</span>
                     </button>
                 </div>
             </div>
             
             <div class="d-flex gap-2">
                 <button 
-                    <?= live_wire('reset') ?>
-                    class="btn btn-secondary"
+                    igniter:click="reset"
+                    igniter:target="reset"
+                    class="btn btn-secondary" 
                     :disabled="loading"
                 >
-                    <span <?= live_loading('reset') ?>>
+                    <span igniter:loading="reset">
                         <i class="spinner-border spinner-border-sm me-1"></i>
                     </span>
-                    Reset
+                    <span igniter:loading.remove="reset">Reset</span>
                 </button>
             </div>
         </div>

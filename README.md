@@ -8,11 +8,13 @@ LiveIgniter brings the power of reactive components to CodeIgniter 4, allowing y
 
 - 🔄 **Reactive Components** - Build interactive UI components with automatic server synchronization
 - ⚡ **Real-time Updates** - Components update automatically without page refreshes
+- 🎯 **HTML Directives** - Use familiar `igniter:click`, `igniter:model` syntax directly in your HTML
 - 🎯 **Alpine.js Integration** - Built on top of Alpine.js for client-side reactivity
 - 🛡️ **CSRF Protection** - Built-in security features
 - 📱 **Offline Support** - Graceful handling of offline states
 - 🎨 **Flexible Styling** - Use any CSS framework or custom styles
 - 🔧 **Easy Integration** - Simple installation and setup process
+- 🛠️ **Spark Commands** - Generate components with built-in CLI tools
 - 📊 **Debug Tools** - Development tools for debugging components
 
 ## 📋 Requirements
@@ -109,12 +111,34 @@ Create a view file in `app/Views/components/counter.php`:
 
 ```php
 <div id="<?= $componentId ?>" x-data="{ count: <?= $count ?> }">
-    <h2 x-text="'<?= esc($message) ?>'"></h2>
+    <h2><?= esc($message) ?></h2>
     <p>Count: <span x-text="count"></span></p>
     
-    <button <?= live_wire('increment') ?>>+</button>
-    <button <?= live_wire('decrement') ?>>-</button>
-    <button <?= live_wire('reset') ?>>Reset</button>
+    <!-- Click handlers -->
+    <button igniter:click="increment">+</button>
+    <button igniter:click="decrement">-</button>
+    <button igniter:click="reset" igniter:confirm="Are you sure?">Reset</button>
+    
+    <!-- Form with model binding -->
+    <form igniter:submit="updateMessage">
+        <input type="text" igniter:model="tempMessage" placeholder="New message">
+        <button type="submit" igniter:target="updateMessage">
+            <span igniter:loading="updateMessage">Loading...</span>
+            <span igniter:loading.remove="updateMessage">Update</span>
+        </button>
+    </form>
+    
+    <!-- Keyboard shortcuts -->
+    <div igniter:keydown.enter="increment" tabindex="0">
+        Press Enter to increment
+    </div>
+    
+    <!-- Auto-refresh and lazy loading -->
+    <div igniter:poll="60:refresh">Auto-refreshes every minute</div>
+    <div igniter:lazy="loadMore">Loads when visible</div>
+    
+    <!-- Offline indicator -->
+    <div igniter:offline>You are offline</div>
 </div>
 ```
 
@@ -150,11 +174,30 @@ Components go through several lifecycle hooks:
 
 LiveIgniter provides several helper functions for your views:
 
-- `live_wire('method')` - Bind method calls to elements
-- `live_model('property')` - Two-way data binding for form inputs
-- `live_loading('method')` - Show loading states
-- `live_offline()` - Handle offline states
-- `live_emit('event')` - Emit events to other components
+#### Core Directives
+- `igniter_click('method')` - Handle click events
+- `igniter_submit('method')` - Handle form submissions
+- `igniter_change('method')` - Handle input changes
+- `igniter_input('method')` - Handle input with debouncing
+- `igniter_keydown('method', ['enter', 'ctrl'])` - Handle keyboard events
+- `igniter_model('property')` - Two-way data binding
+
+#### State & Loading
+- `igniter_loading('method')` - Show loading states
+- `igniter_target(['method1', 'method2'])` - Target specific methods for loading
+- `igniter_dirty('input')` - Show when form is modified
+- `igniter_offline()` - Handle offline states
+
+#### Advanced Features
+- `igniter_poll(30, 'refresh')` - Auto-refresh every 30 seconds
+- `igniter_lazy('loadContent')` - Lazy load when element is visible
+- `igniter_confirm('Are you sure?')` - Confirmation dialogs
+- `igniter_init('expression')` - Component initialization
+
+#### Legacy Support
+- `live_wire('method')` - Backwards compatible click handler
+- `live_model('property')` - Backwards compatible model binding
+- `live_loading('method')` - Backwards compatible loading states
 
 ### Events
 

@@ -1,7 +1,8 @@
 <div id="<?= $componentId ?>" class="live-component counter-component" x-data="{
     count: <?= $count ?>,
     message: '<?= esc($message) ?>',
-    loading: false
+    loading: false,
+    tempMessage: ''
 }">
     <div class="card">
         <div class="card-header">
@@ -20,36 +21,37 @@
             
             <div class="counter-controls d-flex justify-content-center gap-2">
                 <button 
-                    <?= live_wire('decrement') ?>
+                    igniter:click="decrement"
+                    igniter:target="decrement"
                     class="btn btn-danger"
-                    :disabled="count <= 0 || loading"
                 >
-                    <span <?= live_loading('decrement') ?>>
+                    <span igniter:loading="decrement">
                         <i class="spinner-border spinner-border-sm me-1"></i>
                     </span>
-                    <span x-show="!loading || loading !== 'decrement'">-</span>
+                    <span igniter:loading.remove="decrement">-</span>
                 </button>
                 
                 <button 
-                    <?= live_wire('reset') ?>
+                    igniter:click="reset"
+                    igniter:confirm="Are you sure you want to reset the counter?"
+                    igniter:target="reset"
                     class="btn btn-secondary"
-                    :disabled="loading"
                 >
-                    <span <?= live_loading('reset') ?>>
+                    <span igniter:loading="reset">
                         <i class="spinner-border spinner-border-sm me-1"></i>
                     </span>
-                    <span x-show="!loading || loading !== 'reset'">Reset</span>
+                    <span igniter:loading.remove="reset">Reset</span>
                 </button>
                 
                 <button 
-                    <?= live_wire('increment') ?>
+                    igniter:click="increment"
+                    igniter:target="increment"
                     class="btn btn-success"
-                    :disabled="loading"
                 >
-                    <span <?= live_loading('increment') ?>>
+                    <span igniter:loading="increment">
                         <i class="spinner-border spinner-border-sm me-1"></i>
                     </span>
-                    <span x-show="!loading || loading !== 'increment'">+</span>
+                    <span igniter:loading.remove="increment">+</span>
                 </button>
             </div>
             
@@ -61,19 +63,40 @@
                         id="message-input"
                         class="form-control"
                         placeholder="Enter a message..."
-                        <?= live_model('tempMessage') ?>
+                        igniter:model="tempMessage"
+                        igniter:keydown.enter="setMessage"
                     >
                     <button 
-                        <?= live_wire('setMessage', ['$event.target.previousElementSibling.value']) ?>
+                        igniter:click="setMessage"
                         class="btn btn-outline-primary"
+                        x-text="tempMessage ? 'Update Message' : 'Enter message first'"
+                        :disabled="!tempMessage"
                     >
-                        Update Message
                     </button>
+                </div>
+                
+                <!-- Dirty indicator -->
+                <div igniter:dirty="input" class="text-muted mt-1">
+                    <small><i class="fas fa-edit"></i> Message modified</small>
+                </div>
+            </div>
+            
+            <!-- Auto-refresh every 30 seconds -->
+            <div igniter:poll="30:refresh" class="mt-3">
+                <small class="text-muted">
+                    <i class="fas fa-sync-alt"></i> Auto-refreshing every 30 seconds
+                </small>
+            </div>
+            
+            <!-- Lazy load additional content -->
+            <div igniter:lazy="loadAdditionalContent" class="mt-3">
+                <div class="alert alert-info">
+                    <i class="fas fa-eye"></i> This content loads when visible
                 </div>
             </div>
             
             <!-- Offline indicator -->
-            <div <?= live_offline() ?> class="alert alert-warning mt-3">
+            <div igniter:offline class="alert alert-warning mt-3">
                 <i class="fas fa-wifi-slash me-2"></i>
                 You are currently offline. Changes will sync when connection is restored.
             </div>
@@ -82,6 +105,16 @@
             <div x-show="count >= 10" class="alert alert-success mt-3">
                 <i class="fas fa-trophy me-2"></i>
                 Congratulations! You've reached the milestone of 10!
+            </div>
+            
+            <!-- Keyboard shortcuts info -->
+            <div class="mt-3">
+                <small class="text-muted">
+                    <strong>Keyboard shortcuts:</strong><br>
+                    • Enter in message input: Update message<br>
+                    • Space: Quick increment (when focused on increment button)<br>
+                    • Escape: Reset counter
+                </small>
             </div>
         </div>
         
@@ -93,6 +126,14 @@
         </div>
     </div>
 </div>
+
+<!-- Additional keyboard shortcuts -->
+<div 
+    igniter:keydown.space="increment"
+    igniter:keydown.escape="reset"
+    tabindex="0"
+    style="position: absolute; opacity: 0; pointer-events: none;"
+></div>
 
 <style>
 .counter-component {
@@ -112,6 +153,11 @@
     border-radius: 25px;
 }
 
+.counter-controls button.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 .card {
     border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -129,5 +175,25 @@
 
 .counter-display h1:hover {
     animation: pulse 0.5s ease-in-out;
+}
+
+/* Loading state styles */
+.loading .spinner-border {
+    display: inline-block !important;
+}
+
+.btn.loading {
+    position: relative;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: inherit;
 }
 </style>
