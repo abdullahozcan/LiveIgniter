@@ -4,6 +4,15 @@
  * Provides Alpine.js directives and functionality for LiveIgniter components
  */
 
+// Wait for Alpine.js to be available
+function waitForAlpine(callback) {
+    if (typeof Alpine !== 'undefined') {
+        callback();
+    } else {
+        setTimeout(() => waitForAlpine(callback), 50);
+    }
+}
+
 // LiveIgniter Alpine.js plugin
 window.LiveIgniter = {
     // Component state
@@ -610,27 +619,34 @@ window.LiveIgniter = {
     }
 };
 
-// Global utility functions
-window.callLiveMethod = function(method, params = []) {
-    const componentId = this.$el ? LiveIgniter.getComponentId(this.$el) : null;
-    if (componentId) {
-        LiveIgniter.callMethod(componentId, method, params);
-    }
-}.bind(Alpine);
+// Global utility functions (will be bound when Alpine is ready)
+let callLiveMethod, updateProperty;
 
-window.updateProperty = function(property, value) {
-    const componentId = this.$el ? LiveIgniter.getComponentId(this.$el) : null;
-    if (componentId) {
-        LiveIgniter.updateProperty(componentId, property, value);
-    }
-}.bind(Alpine);
-
-// Initialize when DOM is ready
+// Initialize when both DOM and Alpine.js are ready
 document.addEventListener('DOMContentLoaded', () => {
-    LiveIgniter.init();
-});
+    waitForAlpine(() => {
+        // Bind utility functions to Alpine context
+        callLiveMethod = function(method, params = []) {
+            const componentId = this.$el ? LiveIgniter.getComponentId(this.$el) : null;
+            if (componentId) {
+                LiveIgniter.callMethod(componentId, method, params);
+            }
+        }.bind(Alpine);
 
-// Make sure Alpine.js is available
-if (typeof Alpine === 'undefined') {
-    console.warn('Alpine.js is required for LiveIgniter to work properly. Please include Alpine.js before this script.');
-}
+        updateProperty = function(property, value) {
+            const componentId = this.$el ? LiveIgniter.getComponentId(this.$el) : null;
+            if (componentId) {
+                LiveIgniter.updateProperty(componentId, property, value);
+            }
+        }.bind(Alpine);
+
+        // Make functions globally available
+        window.callLiveMethod = callLiveMethod;
+        window.updateProperty = updateProperty;
+
+        // Initialize LiveIgniter
+        LiveIgniter.init();
+        
+        console.log('LiveIgniter initialized successfully with Alpine.js');
+    });
+});
