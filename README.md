@@ -1,5 +1,12 @@
 # LiveIgniter
 
+[![GitHub](https://img.shields.io/github/license/abdullahozcan/LiveIgniter)](https://github.com/abdullahozcan/LiveIgniter/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/abdullahozcan/LiveIgniter)](https://github.com/abdullahozcan/LiveIgniter/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/abdullahozcan/LiveIgniter)](https://github.com/abdullahozcan/LiveIgniter/network)
+[![GitHub issues](https://img.shields.io/github/issues/abdullahozcan/LiveIgniter)](https://github.com/abdullahozcan/LiveIgniter/issues)
+[![PHP Version](https://img.shields.io/packagist/php-v/liveigniter/liveigniter)](https://packagist.org/packages/liveigniter/liveigniter)
+[![Packagist Version](https://img.shields.io/packagist/v/liveigniter/liveigniter)](https://packagist.org/packages/liveigniter/liveigniter)
+
 🚀 **A Livewire-like reactive component system for CodeIgniter 4**
 
 LiveIgniter brings the power of reactive components to CodeIgniter 4, allowing you to build dynamic, interactive web applications with minimal JavaScript. Inspired by Laravel Livewire, LiveIgniter provides a seamless way to create reactive components that automatically sync with the server.
@@ -25,10 +32,20 @@ LiveIgniter brings the power of reactive components to CodeIgniter 4, allowing y
 
 ## 🚀 Installation
 
+### Via Composer (Recommended)
+
 Install LiveIgniter via Composer:
 
 ```bash
 composer require liveigniter/liveigniter
+```
+
+### Via Git Clone
+
+You can also clone the repository directly:
+
+```bash
+git clone https://github.com/abdullahozcan/LiveIgniter.git
 ```
 
 ### Quick Setup
@@ -412,11 +429,27 @@ Access debug endpoints (development only):
 
 ## 📝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Please see our [Contributing Guide](https://github.com/abdullahozcan/LiveIgniter/blob/main/CONTRIBUTING.md) for details.
+
+### How to Contribute
+
+1. Fork the repository on GitHub
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Setup
+
+```bash
+git clone https://github.com/abdullahozcan/LiveIgniter.git
+cd LiveIgniter
+composer install
+```
 
 ## 📄 License
 
-LiveIgniter is open-sourced software licensed under the [MIT license](LICENSE).
+LiveIgniter is open-sourced software licensed under the [MIT license](https://github.com/abdullahozcan/LiveIgniter/blob/main/LICENSE).
 
 ## 🙏 Credits
 
@@ -424,11 +457,19 @@ LiveIgniter is open-sourced software licensed under the [MIT license](LICENSE).
 - Built for [CodeIgniter 4](https://codeigniter.com/)
 - Powered by [Alpine.js](https://alpinejs.dev/)
 
+## 🔗 Quick Links
+
+- 📦 [Packagist Package](https://packagist.org/packages/liveigniter/liveigniter)
+- 📚 [Documentation](https://github.com/abdullahozcan/LiveIgniter/wiki)
+- 🎯 [Examples](https://github.com/abdullahozcan/LiveIgniter/tree/main/examples)
+- 🐛 [Report Issues](https://github.com/abdullahozcan/LiveIgniter/issues/new)
+- 💡 [Feature Requests](https://github.com/abdullahozcan/LiveIgniter/discussions/new)
+
 ## 📞 Support
 
 - 📧 Email: support@liveigniter.com
-- 🐛 Issues: [GitHub Issues](https://github.com/liveigniter/liveigniter/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/liveigniter/liveigniter/discussions)
+- 🐛 Issues: [GitHub Issues](https://github.com/abdullahozcan/LiveIgniter/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/abdullahozcan/LiveIgniter/discussions)
 
 ---
 
