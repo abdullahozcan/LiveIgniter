@@ -1,53 +1,91 @@
-<div id="<?= $componentId ?>" class="live-component counter-component" x-data="{
-    count: <?= $count ?>,
-    message: '<?= esc($message) ?>',
-    loading: false,
-    tempMessage: ''
-}">
-    <div class="card">
-        <div class="card-header">
-            <h3>LiveIgniter Counter Example</h3>
+<div id="<?= $componentId ?>" data-component-id="<?= $componentId ?>">
+    <div class="card" style="max-width: 400px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h3>LiveIgniter Counter Example</h3>
+        
+        <!-- Display counter value -->
+        <div style="text-align: center; margin: 20px 0;">
+            <span style="font-size: 2em; font-weight: bold; color: #333;">
+                <?= $count ?>
+            </span>
         </div>
         
-        <div class="card-body">
-            <div class="message mb-3">
-                <p x-text="message" class="alert alert-info"></p>
-            </div>
+        <!-- Action buttons using live_igniter helper -->
+        <div style="text-align: center; margin: 15px 0;">
+            <button<?= live_igniter('increment') ?>
+                    style="background: #28a745; color: white; border: none; padding: 8px 16px; margin: 0 5px; border-radius: 4px; cursor: pointer;">
+                +1
+            </button>
             
-            <div class="counter-display mb-4 text-center">
-                <h1 x-text="count" class="display-4 text-primary"></h1>
-                <p class="text-muted">Current Count</p>
-            </div>
+            <button<?= live_igniter('decrement') ?>
+                    style="background: #dc3545; color: white; border: none; padding: 8px 16px; margin: 0 5px; border-radius: 4px; cursor: pointer;">
+                -1
+            </button>
             
-            <div class="counter-controls d-flex justify-content-center gap-2">
-                <button 
-                    igniter:click="decrement"
-                    igniter:target="decrement"
-                    class="btn btn-danger"
-                >
-                    <span igniter:loading="decrement">
-                        <i class="spinner-border spinner-border-sm me-1"></i>
-                    </span>
-                    <span igniter:loading.remove="decrement">-</span>
-                </button>
-                
-                <button 
-                    igniter:click="reset"
-                    igniter:confirm="Are you sure you want to reset the counter?"
-                    igniter:target="reset"
-                    class="btn btn-secondary"
-                >
-                    <span igniter:loading="reset">
-                        <i class="spinner-border spinner-border-sm me-1"></i>
-                    </span>
-                    <span igniter:loading.remove="reset">Reset</span>
-                </button>
-                
-                <button 
-                    igniter:click="increment"
-                    igniter:target="increment"
-                    class="btn btn-success"
-                >
+            <button<?= live_igniter('reset') ?>
+                    style="background: #6c757d; color: white; border: none; padding: 8px 16px; margin: 0 5px; border-radius: 4px; cursor: pointer;">
+                Reset
+            </button>
+        </div>
+        
+        <!-- Message display -->
+        <div style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+            <strong>Message:</strong> <?= esc($message) ?>
+        </div>
+        
+        <!-- Input with x-igniter-model (two-way binding) -->
+        <div style="margin: 15px 0;">
+            <label>Update message:</label>
+            <input type="text" 
+                   x-igniter-model="tempMessage" 
+                   value="<?= esc($tempMessage) ?>"
+                   style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px;"
+                   placeholder="Type a new message...">
+            
+            <button<?= live_igniter('setMessage', [$tempMessage]) ?>
+                    style="background: #007bff; color: white; border: none; padding: 8px 16px; margin: 5px 0; border-radius: 4px; cursor: pointer; width: 100%;">
+                Update Message
+            </button>
+        </div>
+        
+        <!-- Conditional content -->
+        <?php if ($count >= 5): ?>
+            <div style="margin: 15px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;">
+                🎉 Great! You've reached <?= $count ?> clicks!
+            </div>
+        <?php endif; ?>
+        
+        <!-- Load additional content button -->
+        <?php if (!$additionalContentLoaded): ?>
+            <button<?= live_igniter('loadAdditionalContent') ?>
+                    style="background: #17a2b8; color: white; border: none; padding: 8px 16px; margin: 5px 0; border-radius: 4px; cursor: pointer; width: 100%;">
+                Load Additional Content
+            </button>
+        <?php else: ?>
+            <div style="margin: 15px 0; padding: 10px; background: #bee5eb; border: 1px solid #86cfda; border-radius: 4px; color: #0c5460;">
+                <h4>Additional Content Loaded!</h4>
+                <p>This content was loaded dynamically using LiveIgniter.</p>
+                <ul>
+                    <li>Current count: <?= $count ?></li>
+                    <li>Component ID: <?= $componentId ?></li>
+                    <li>Server time: <?= date('Y-m-d H:i:s') ?></li>
+                </ul>
+            </div>
+        <?php endif; ?>
+        
+        <!-- Debug info -->
+        <details style="margin-top: 20px;">
+            <summary style="cursor: pointer; color: #666;">Debug Info</summary>
+            <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px; font-family: monospace; font-size: 12px;">
+                <strong>Component Properties:</strong><br>
+                - count: <?= $count ?><br>
+                - message: <?= esc($message) ?><br>
+                - tempMessage: <?= esc($tempMessage) ?><br>
+                - additionalContentLoaded: <?= $additionalContentLoaded ? 'true' : 'false' ?><br>
+                - componentId: <?= $componentId ?>
+            </div>
+        </details>
+    </div>
+</div>
                     <span igniter:loading="increment">
                         <i class="spinner-border spinner-border-sm me-1"></i>
                     </span>

@@ -50,17 +50,17 @@ if (!function_exists('live_emit')) {
     }
 }
 
-// Backwards compatibility - these will generate the old-style attributes
-if (!function_exists('live_wire')) {
+// New Alpine.js x-igniter-* directive helpers
+if (!function_exists('live_igniter')) {
     /**
-     * Generate wire directive attributes for HTML elements (legacy)
-     * Use igniter:click="method" directly instead
+     * Generate igniter directive attributes for HTML elements
+     * Use x-igniter-click="method" instead of igniter:click="method"
      * 
      * @param string $method Method name to call
      * @param array $params Parameters to pass
      * @return string HTML attributes
      */
-    function live_wire(string $method, array $params = []): string
+    function live_igniter(string $method, array $params = []): string
     {
         $methodCall = $method;
         if (!empty($params)) {
@@ -69,35 +69,47 @@ if (!function_exists('live_wire')) {
             }, $params)) . ')';
         }
         
-        return " igniter:click=\"{$methodCall}\"";
+        return " x-igniter-click=\"{$methodCall}\"";
+    }
+}
+
+// Backwards compatibility - keep live_wire as alias
+if (!function_exists('live_wire')) {
+    /**
+     * Alias for live_igniter (backwards compatibility)
+     * @deprecated Use live_igniter() instead
+     */
+    function live_wire(string $method, array $params = []): string
+    {
+        return live_igniter($method, $params);
     }
 }
 
 if (!function_exists('live_model')) {
     /**
-     * Generate model binding directive for form inputs (legacy)
-     * Use igniter:model="property" directly instead
+     * Generate model binding directive for form inputs
+     * Use x-igniter-model="property" instead of igniter:model="property"
      * 
      * @param string $property Property name to bind
      * @return string HTML attributes
      */
     function live_model(string $property): string
     {
-        return " igniter:model=\"{$property}\"";
+        return " x-igniter-model=\"{$property}\"";
     }
 }
 
 if (!function_exists('live_loading')) {
     /**
-     * Generate loading state directive (legacy)
-     * Use igniter:loading="method" directly instead
+     * Generate loading state directive
+     * Use x-igniter-loading="method" instead of igniter:loading="method"
      * 
      * @param string $target Target method or property
      * @return string HTML attributes
      */
     function live_loading(string $target = 'any'): string
     {
-        return " igniter:loading=\"{$target}\"";
+        return " x-igniter-loading=\"{$target}\"";
     }
 }
 

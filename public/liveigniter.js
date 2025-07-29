@@ -47,6 +47,9 @@ window.LiveIgniter = {
         // Initialize Alpine.js directives
         this.initAlpineDirectives();
         
+        // Emit initialized event
+        document.dispatchEvent(new CustomEvent('liveigniter:initialized'));
+        
         // Set up global error handling
         this.setupErrorHandling();
         
@@ -102,8 +105,8 @@ window.LiveIgniter = {
     registerIgniterDirectives() {
         const self = this;
         
-        // igniter:click
-        Alpine.directive('igniter:click', (el, { expression }, { effect, cleanup }) => {
+        // x-igniter-click (for igniter:click attribute)
+        Alpine.directive('igniter-click', (el, { expression }, { effect, cleanup }) => {
             const [method, ...params] = self.parseMethodCall(expression);
             
             el.addEventListener('click', (e) => {
@@ -112,8 +115,8 @@ window.LiveIgniter = {
             });
         });
         
-        // igniter:submit
-        Alpine.directive('igniter:submit', (el, { expression }, { effect, cleanup }) => {
+        // x-igniter-submit (for igniter:submit attribute)
+        Alpine.directive('igniter-submit', (el, { expression }, { effect, cleanup }) => {
             const [method, ...params] = self.parseMethodCall(expression);
             
             el.addEventListener('submit', (e) => {
@@ -124,8 +127,8 @@ window.LiveIgniter = {
             });
         });
         
-        // igniter:change
-        Alpine.directive('igniter:change', (el, { expression }, { effect, cleanup }) => {
+        // x-igniter-change (for igniter:change attribute)
+        Alpine.directive('igniter-change', (el, { expression }, { effect, cleanup }) => {
             const [method, ...params] = self.parseMethodCall(expression);
             
             el.addEventListener('change', (e) => {
@@ -133,8 +136,8 @@ window.LiveIgniter = {
             });
         });
         
-        // igniter:input
-        Alpine.directive('igniter:input', (el, { expression }, { effect, cleanup }) => {
+        // x-igniter-input (for igniter:input attribute)
+        Alpine.directive('igniter-input', (el, { expression }, { effect, cleanup }) => {
             const [method, ...params] = self.parseMethodCall(expression);
             let timeout;
             
@@ -143,6 +146,35 @@ window.LiveIgniter = {
                 timeout = setTimeout(() => {
                     self.callMethod(self.getComponentId(el), method, [...params, e.target.value]);
                 }, 300);
+            });
+        });
+        
+        // x-igniter-model (for two-way data binding)
+        Alpine.directive('igniter-model', (el, { expression }, { effect, cleanup }) => {
+            const property = expression;
+            
+            // Update component property when input changes
+            el.addEventListener('input', (e) => {
+                self.callMethod(self.getComponentId(el), 'updateProperty', [property, e.target.value]);
+            });
+            
+            // Optional: Listen for component updates to sync back to input
+            // This would require additional implementation in the component system
+        });
+        
+        // x-igniter-loading (for loading states)
+        Alpine.directive('igniter-loading', (el, { expression }, { effect, cleanup }) => {
+            const targetMethod = expression || 'any';
+            
+            effect(() => {
+                const component = self.components.get(self.getComponentId(el));
+                if (component) {
+                    const isLoading = targetMethod === 'any' ? 
+                        component.loading : 
+                        component.loadingMethods && component.loadingMethods[targetMethod];
+                    
+                    el.style.display = isLoading ? 'block' : 'none';
+                }
             });
         });
         

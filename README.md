@@ -15,7 +15,7 @@ LiveIgniter brings the power of reactive components to CodeIgniter 4, allowing y
 
 - 🔄 **Reactive Components** - Build interactive UI components with automatic server synchronization
 - ⚡ **Real-time Updates** - Components update automatically without page refreshes
-- 🎯 **HTML Directives** - Use familiar `igniter:click`, `igniter:model` syntax directly in your HTML
+- 🎯 **HTML Directives** - Use familiar `x-igniter-click`, `x-igniter-model` syntax directly in your HTML
 - 🎯 **Alpine.js Integration** - Built on top of Alpine.js for client-side reactivity
 - 🛡️ **CSRF Protection** - Built-in security features
 - 📱 **Offline Support** - Graceful handling of offline states
@@ -128,24 +128,16 @@ Create a view file in `app/Views/components/counter.php`:
 
 ```php
 <div id="<?= $componentId ?>" x-data="{ count: <?= $count ?> }">
-    <h2><?= esc($message) ?></h2>
-    <p>Count: <span x-text="count"></span></p>
+    <h3>Count: <?= $count ?></h3>
+    <button x-igniter-click="increment">+</button>
+    <button x-igniter-click="decrement">-</button>
+    <button x-igniter-click="reset" x-igniter-confirm="Are you sure?">Reset</button>
     
-    <!-- Click handlers -->
-    <button igniter:click="increment">+</button>
-    <button igniter:click="decrement">-</button>
-    <button igniter:click="reset" igniter:confirm="Are you sure?">Reset</button>
-    
-    <!-- Form with model binding -->
-    <form igniter:submit="updateMessage">
-        <input type="text" igniter:model="tempMessage" placeholder="New message">
-        <button type="submit" igniter:target="updateMessage">
-            <span igniter:loading="updateMessage">Loading...</span>
-            <span igniter:loading.remove="updateMessage">Update</span>
-        </button>
-    </form>
-    
-    <!-- Keyboard shortcuts -->
+    <!-- Two-way data binding -->
+    <form x-igniter-submit="updateMessage">
+        <input type="text" x-igniter-model="tempMessage" placeholder="New message">
+        <button type="submit">Update</button>
+    </form>    <!-- Keyboard shortcuts -->
     <div igniter:keydown.enter="increment" tabindex="0">
         Press Enter to increment
     </div>
@@ -191,30 +183,46 @@ Components go through several lifecycle hooks:
 
 LiveIgniter provides several helper functions for your views:
 
-#### Core Directives
-- `igniter_click('method')` - Handle click events
-- `igniter_submit('method')` - Handle form submissions
-- `igniter_change('method')` - Handle input changes
-- `igniter_input('method')` - Handle input with debouncing
-- `igniter_keydown('method', ['enter', 'ctrl'])` - Handle keyboard events
-- `igniter_model('property')` - Two-way data binding
+#### Primary Functions
+- `live_igniter('method')` - Generate x-igniter-click directive
+- `live_model('property')` - Generate x-igniter-model directive  
+- `live_loading('method')` - Generate x-igniter-loading directive
 
-#### State & Loading
-- `igniter_loading('method')` - Show loading states
-- `igniter_target(['method1', 'method2'])` - Target specific methods for loading
-- `igniter_dirty('input')` - Show when form is modified
-- `igniter_offline()` - Handle offline states
+#### Usage Examples
+```php
+<!-- Click handlers -->
+<button<?= live_igniter('increment') ?>>+1</button>
+<button<?= live_igniter('save', ['param1', 'param2']) ?>>Save</button>
 
-#### Advanced Features
-- `igniter_poll(30, 'refresh')` - Auto-refresh every 30 seconds
-- `igniter_lazy('loadContent')` - Lazy load when element is visible
-- `igniter_confirm('Are you sure?')` - Confirmation dialogs
-- `igniter_init('expression')` - Component initialization
+<!-- Two-way binding -->
+<input<?= live_model('message') ?> type="text">
+<textarea<?= live_model('content') ?>></textarea>
+
+<!-- Loading states -->
+<div<?= live_loading('save') ?>>Saving...</div>
+```
+
+#### Direct HTML Usage
+You can also use directives directly in your HTML:
+
+```html
+<!-- Click events -->
+<button x-igniter-click="increment">+1</button>
+<button x-igniter-click="save('param1', 'param2')">Save</button>
+
+<!-- Form handling -->
+<form x-igniter-submit="handleForm">
+    <input x-igniter-model="message" type="text">
+    <button type="submit">Submit</button>
+</form>
+
+<!-- Input events -->
+<input x-igniter-change="handleChange" type="text">
+<input x-igniter-input="handleInput" type="text"> <!-- Debounced -->
+```
 
 #### Legacy Support
-- `live_wire('method')` - Backwards compatible click handler
-- `live_model('property')` - Backwards compatible model binding
-- `live_loading('method')` - Backwards compatible loading states
+- `live_wire('method')` - Alias for live_igniter() (deprecated)
 
 ### Events
 
