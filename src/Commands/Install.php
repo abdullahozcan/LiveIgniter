@@ -98,12 +98,128 @@ class Install extends BaseCommand
     {
         CLI::write('📦 Publishing files...', 'cyan');
 
-        // Use the publish command
-        $command = command('liveigniter:publish');
-        if ($force) {
-            $command->run(['--force']);
+        // Publish config files
+        $this->publishConfig($force);
+        
+        // Publish assets
+        $this->publishAssets($force);
+        
+        // Publish views
+        $this->publishViews($force);
+        
+        CLI::write('✓ Files published successfully', 'green');
+    }
+    
+    /**
+     * Publish config files
+     */
+    protected function publishConfig(bool $force): void
+    {
+        // Publish LiveIgniter config
+        $sourceConfig = __DIR__ . '/../Config/LiveIgniter.php';
+        $targetConfig = APPPATH . 'Config/LiveIgniter.php';
+
+        if (!file_exists($targetConfig) || $force) {
+            // Ensure target directory exists
+            $targetDir = dirname($targetConfig);
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
+
+            // Read source config and modify namespace
+            $configContent = file_get_contents($sourceConfig);
+            $configContent = str_replace('namespace LiveIgniter\Config;', 'namespace Config;', $configContent);
+
+            if (file_put_contents($targetConfig, $configContent) !== false) {
+                CLI::write("✓ Published config: {$targetConfig}", 'green');
+            }
         } else {
-            $command->run([]);
+            CLI::write('⚠ Config file already exists', 'yellow');
+        }
+        
+        // Publish Services extension
+        $targetServices = APPPATH . 'Config/Services.php';
+        
+        if (!file_exists($targetServices)) {
+            // Create basic Services.php
+            $servicesContent = '<?php
+
+namespace Config;
+
+use CodeIgniter\Config\BaseService;
+use LiveIgniter\ComponentManager;
+
+class Services extends \CodeIgniter\Config\Services
+{
+    /**
+     * Get LiveIgniter Component Manager instance
+     */
+    public static function liveigniterManager(bool $getShared = true): ComponentManager
+    {
+        if ($getShared) {
+            return static::getSharedInstance(\'liveigniterManager\');
+        }
+        
+        return new ComponentManager();
+    }
+}';
+            
+            if (file_put_contents($targetServices, $servicesContent) !== false) {
+                CLI::write("✓ Created services: {$targetServices}", 'green');
+            }
+        } else {
+            // Check if our method exists
+            $existingContent = file_get_contents($targetServices);
+            
+            if (strpos($existingContent, 'liveigniterManager') === false) {
+                CLI::write('⚠ Please add liveigniterManager method to your Services.php', 'yellow');
+            }
+        }
+    }
+    
+    /**
+     * Publish assets
+     */
+    protected function publishAssets(bool $force): void
+    {
+        $sourceAsset = __DIR__ . '/../../public/liveigniter.js';
+        $targetAsset = FCPATH . 'assets/js/liveigniter.js';
+
+        if (!file_exists($targetAsset) || $force) {
+            // Ensure target directory exists
+            $targetDir = dirname($targetAsset);
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
+
+            if (copy($sourceAsset, $targetAsset)) {
+                CLI::write("✓ Published asset: {$targetAsset}", 'green');
+            }
+        } else {
+            CLI::write('⚠ Asset file already exists', 'yellow');
+        }
+    }
+    
+    /**
+     * Publish views
+     */
+    protected function publishViews(bool $force): void
+    {
+        $sourceView = __DIR__ . '/../../views/components/counter.php';
+        $targetView = APPPATH . 'Views/components/counter.php';
+
+        if (!file_exists($targetView) || $force) {
+            // Ensure target directory exists
+            $targetDir = dirname($targetView);
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
+
+            if (copy($sourceView, $targetView)) {
+                CLI::write("✓ Published view: {$targetView}", 'green');
+            }
+        } else {
+            CLI::write('⚠ View file already exists', 'yellow');
         }
     }
 
@@ -156,15 +272,50 @@ class Install extends BaseCommand
     {
         CLI::write('📝 Creating example component...', 'cyan');
 
-        // Use the make component command
-        $makeCommand = command('liveigniter:make');
-        $options = ['Counter'];
+        // Create Counter component class
+        $componentClass = APPPATH . 'LiveComponents/Counter.php';
         
-        if ($force) {
-            $options[] = '--force';
-        }
+        if (!file_exists($componentClass) || $force) {
+            // Ensure directory exists
+            $dir = dirname($componentClass);
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            
+            $counterCode = '<?php
 
-        $makeCommand->run($options);
+namespace App\LiveComponents;
+
+use LiveIgniter\LiveComponent;
+
+class Counter extends LiveComponent
+{
+    public int $count = 0;
+    public string $message = "Hello from LiveIgniter!";
+    
+    public function increment(): void
+    {
+        $this->count++;
+    }
+    
+    public function decrement(): void
+    {
+        $this->count--;
+    }
+    
+    public function reset(): void
+    {
+        $this->count = 0;
+        $this->message = "Counter reset!";
+    }
+}';
+            
+            if (file_put_contents($componentClass, $counterCode) !== false) {
+                CLI::write("✓ Created component: {$componentClass}", 'green');
+            }
+        } else {
+            CLI::write('⚠ Example component already exists', 'yellow');
+        }
     }
 
     /**
