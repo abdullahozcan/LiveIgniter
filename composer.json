@@ -3,7 +3,7 @@
     "description": "A Livewire-like reactive component system for CodeIgniter 4",
     "type": "library",
     "keywords": ["codeigniter", "livewire", "reactive", "components", "php"],
-    "homepage": "https://github.com/liveigniter/liveigniter",
+    "homepage": "https://github.com/abdullahozcan/LiveIgniter",
     "license": "MIT",
     "authors": [
         {
