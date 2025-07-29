@@ -2,13 +2,21 @@
     "name": "liveigniter/liveigniter",
     "description": "A Livewire-like reactive component system for CodeIgniter 4",
     "type": "library",
-    "keywords": ["codeigniter", "livewire", "reactive", "components", "php"],
+    "keywords": ["codeigniter", "livewire", "reactive", "components", "php", "alpine", "ui"],
     "homepage": "https://github.com/abdullahozcan/LiveIgniter",
     "license": "MIT",
+    "version": "0.2.23-alpha",
+    "support": {
+        "issues": "https://github.com/abdullahozcan/LiveIgniter/issues",
+        "source": "https://github.com/abdullahozcan/LiveIgniter",
+        "docs": "https://github.com/abdullahozcan/LiveIgniter/wiki"
+    },
     "authors": [
         {
-            "name": "LiveIgniter Team",
-            "email": "team@liveigniter.com"
+            "name": "Abdullah Özcan",
+            "email": "abdullah.ozcan@gmail.com",
+            "homepage": "https://github.com/abdullahozcan",
+            "role": "owner"
         }
     ],
     "require": {
