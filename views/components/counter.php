@@ -1,10 +1,10 @@
-<div id="<?= $componentId ?>" data-component-id="<?= $componentId ?>">
+<div id="<?= $componentId ?>" data-component-id="<?= $componentId ?>"<?= live_component_data(compact('count', 'message', 'tempMessage', 'additionalContentLoaded')) ?>>
     <div class="card" style="max-width: 400px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
         <h3>LiveIgniter Counter Example</h3>
         
-        <!-- Display counter value -->
+        <!-- Display counter value with Alpine reactivity -->
         <div style="text-align: center; margin: 20px 0;">
-            <span style="font-size: 2em; font-weight: bold; color: #333;">
+            <span x-text="count" style="font-size: 2em; font-weight: bold; color: #333;">
                 <?= $count ?>
             </span>
         </div>
@@ -27,60 +27,61 @@
             </button>
         </div>
         
-        <!-- Message display -->
+        <!-- Message display with Alpine reactivity -->
         <div style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 4px;">
-            <strong>Message:</strong> <?= esc($message) ?>
+            <strong>Message:</strong> <span x-text="message"><?= esc($message) ?></span>
         </div>
         
         <!-- Input with x-igniter-model (two-way binding) -->
         <div style="margin: 15px 0;">
             <label>Update message:</label>
             <input type="text" 
-                   x-igniter-model="tempMessage" 
+                   x-igniter-model="tempMessage"
+                   x-model="tempMessage"
                    value="<?= esc($tempMessage) ?>"
                    style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px;"
                    placeholder="Type a new message...">
             
-            <button<?= live_igniter('setMessage', [$tempMessage]) ?>
+            <button<?= live_igniter('setMessage') ?>
+                    x-bind:disabled="!tempMessage"
                     style="background: #007bff; color: white; border: none; padding: 8px 16px; margin: 5px 0; border-radius: 4px; cursor: pointer; width: 100%;">
-                Update Message
+                <span x-text="tempMessage ? 'Update Message' : 'Type a message first'">Update Message</span>
             </button>
         </div>
         
-        <!-- Conditional content -->
-        <?php if ($count >= 5): ?>
-            <div style="margin: 15px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;">
-                🎉 Great! You've reached <?= $count ?> clicks!
-            </div>
-        <?php endif; ?>
+        <!-- Conditional content with Alpine reactivity -->
+        <div x-show="count >= 5" x-transition style="margin: 15px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;">
+            🎉 Great! You've reached <span x-text="count"></span> clicks!
+        </div>
         
-        <!-- Load additional content button -->
-        <?php if (!$additionalContentLoaded): ?>
+        <!-- Load additional content button with Alpine reactivity -->
+        <div x-show="!additionalContentLoaded">
             <button<?= live_igniter('loadAdditionalContent') ?>
                     style="background: #17a2b8; color: white; border: none; padding: 8px 16px; margin: 5px 0; border-radius: 4px; cursor: pointer; width: 100%;">
                 Load Additional Content
             </button>
-        <?php else: ?>
-            <div style="margin: 15px 0; padding: 10px; background: #bee5eb; border: 1px solid #86cfda; border-radius: 4px; color: #0c5460;">
-                <h4>Additional Content Loaded!</h4>
-                <p>This content was loaded dynamically using LiveIgniter.</p>
-                <ul>
-                    <li>Current count: <?= $count ?></li>
-                    <li>Component ID: <?= $componentId ?></li>
-                    <li>Server time: <?= date('Y-m-d H:i:s') ?></li>
-                </ul>
-            </div>
-        <?php endif; ?>
+        </div>
         
-        <!-- Debug info -->
+        <div x-show="additionalContentLoaded" x-transition style="margin: 15px 0; padding: 10px; background: #bee5eb; border: 1px solid #86cfda; border-radius: 4px; color: #0c5460;">
+            <h4>Additional Content Loaded!</h4>
+            <p>This content was loaded dynamically using LiveIgniter.</p>
+            <ul>
+                <li>Current count: <span x-text="count"></span></li>
+                <li>Component ID: <?= $componentId ?></li>
+                <li>Server time: <?= date('Y-m-d H:i:s') ?></li>
+            </ul>
+        </div>
+        
+        <!-- Debug info with Alpine reactivity -->
         <details style="margin-top: 20px;">
             <summary style="cursor: pointer; color: #666;">Debug Info</summary>
             <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px; font-family: monospace; font-size: 12px;">
-                <strong>Component Properties:</strong><br>
-                - count: <?= $count ?><br>
-                - message: <?= esc($message) ?><br>
-                - tempMessage: <?= esc($tempMessage) ?><br>
-                - additionalContentLoaded: <?= $additionalContentLoaded ? 'true' : 'false' ?><br>
+                <strong>Component Properties (Live):</strong><br>
+                - count: <span x-text="count"></span><br>
+                - message: <span x-text="message"></span><br>
+                - tempMessage: <span x-text="tempMessage"></span><br>
+                - additionalContentLoaded: <span x-text="additionalContentLoaded"></span><br>
+                - loading: <span x-text="loading"></span><br>
                 - componentId: <?= $componentId ?>
             </div>
         </details>

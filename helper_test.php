@@ -6,8 +6,16 @@
     <script src="<?= base_url('public/liveigniter.js') ?>"></script>
 </head>
 <body>
-    <div data-component-id="test-component" style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <div data-component-id="test-component" style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;"<?= live_component_data(['testValue' => 'Hello World', 'counter' => 0, 'message' => 'Test message']) ?>>
         <h2>LiveIgniter Helper Functions Test</h2>
+        
+        <!-- Alpine.js reactive display -->
+        <div style="margin: 10px 0; padding: 10px; background: #e7f3ff; border-radius: 4px;">
+            <strong>Live Data:</strong> 
+            <span x-text="testValue"></span> | 
+            Counter: <span x-text="counter"></span> | 
+            Loading: <span x-text="loading ? 'Yes' : 'No'"></span>
+        </div>
         
         <!-- Test live_igniter function -->
         <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 4px;">
@@ -82,6 +90,26 @@
                    style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px;">
         </div>
 
+        <!-- Test live_data and live_component_data functions -->
+        <div style="margin: 20px 0; padding: 15px; background: #e8f5e8; border-radius: 4px;">
+            <h3>6. live_component_data() Helper Function</h3>
+            <p>Automatically creates x-data from component properties:</p>
+            
+            <button x-igniter-click="increment" @click="counter++"
+                    style="background: #28a745; color: white; border: none; padding: 8px 16px; margin: 5px; border-radius: 4px; cursor: pointer;">
+                Increment Counter
+            </button>
+            
+            <button @click="testValue = 'Updated!'"
+                    style="background: #ffc107; color: black; border: none; padding: 8px 16px; margin: 5px; border-radius: 4px; cursor: pointer;">
+                Update Test Value
+            </button>
+            
+            <p><small>Current component data (live): 
+                <code x-text="JSON.stringify({testValue, counter, message, loading})"></code>
+            </small></p>
+        </div>
+
         <!-- Output comparison -->
         <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 4px; font-family: monospace; font-size: 12px;">
             <h4>Generated Output Comparison:</h4>
@@ -90,6 +118,7 @@
                 <li><strong>live_model('name'):</strong> <code><?= esc(live_model('name')) ?></code></li>
                 <li><strong>live_loading('save'):</strong> <code><?= esc(live_loading('save')) ?></code></li>
                 <li><strong>live_wire('save'):</strong> <code><?= esc(live_wire('save')) ?></code> <small>(same as live_igniter)</small></li>
+                <li><strong>live_component_data(...):</strong> <code><?= esc(live_component_data(['count' => 0, 'message' => 'test'])) ?></code></li>
             </ul>
         </div>
     </div>

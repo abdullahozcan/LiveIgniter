@@ -50,7 +50,9 @@
     "extra": {
         "codeigniter": {
             "config": "src/Config/",
-            "routes": "routes/LiveIgniterRoutes.php",
+            "routes": [
+                "routes/LiveIgniterRoutes.php"
+            ],
             "commands": {
                 "LiveIgniter\\Commands\\MakeComponent": "liveigniter:make",
                 "LiveIgniter\\Commands\\Install": "liveigniter:install",
@@ -58,6 +60,11 @@
                 "LiveIgniter\\Commands\\ListComponents": "liveigniter:list",
                 "LiveIgniter\\Commands\\Clean": "liveigniter:clean"
             }
+        },
+        "codeigniter4": {
+            "routes": [
+                "routes/LiveIgniterRoutes.php"
+            ]
         }
     }
 }

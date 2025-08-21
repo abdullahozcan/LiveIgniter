@@ -187,18 +187,24 @@ LiveIgniter provides several helper functions for your views:
 - `live_igniter('method')` - Generate x-igniter-click directive
 - `live_model('property')` - Generate x-igniter-model directive  
 - `live_loading('method')` - Generate x-igniter-loading directive
+- `live_component_data(array)` - Generate x-data from component properties
 
 #### Usage Examples
 ```php
-<!-- Click handlers -->
-<button<?= live_igniter('increment') ?>>+1</button>
+<!-- Component with auto-generated x-data -->
+<div id="<?= $componentId ?>"<?= live_component_data(compact('count', 'message', 'loading')) ?>>
+    <h3>Count: <span x-text="count"></span></h3>
+    <button<?= live_igniter('increment') ?>>+1</button>
+    
+    <!-- Reactive display -->
+    <div x-show="count >= 10" x-transition>
+        Congratulations! You reached 10!
+    </div>
+</div>
+
+<!-- Individual helpers -->
 <button<?= live_igniter('save', ['param1', 'param2']) ?>>Save</button>
-
-<!-- Two-way binding -->
 <input<?= live_model('message') ?> type="text">
-<textarea<?= live_model('content') ?>></textarea>
-
-<!-- Loading states -->
 <div<?= live_loading('save') ?>>Saving...</div>
 ```
 

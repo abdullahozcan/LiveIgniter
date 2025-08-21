@@ -57,6 +57,14 @@ class Counter extends LiveComponent
         }
     }
     
+    public function updateProperty(string $property, $value): void
+    {
+        // Update component property dynamically
+        if (property_exists($this, $property)) {
+            $this->$property = $value;
+        }
+    }
+    
     public function refresh(): void
     {
         // Refresh component data - could fetch from database

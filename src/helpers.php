@@ -50,6 +50,75 @@ if (!function_exists('live_emit')) {
     }
 }
 
+if (!function_exists('live_data')) {
+    /**
+     * Generate x-data attribute with component properties
+     * Automatically extracts all public properties from the current component context
+     * 
+     * @param array $additionalData Additional data to merge
+     * @return string HTML x-data attribute
+     */
+    function live_data(array $additionalData = []): string
+    {
+        // Get all defined variables in the current template context
+        $templateVars = get_defined_vars();
+        
+        // Filter out system variables and keep only component data
+        $componentData = [];
+        $systemVars = ['_SERVER', '_GET', '_POST', '_FILES', '_COOKIE', '_SESSION', '_ENV', 'GLOBALS', 'componentId'];
+        
+        foreach ($templateVars as $key => $value) {
+            if (!in_array($key, $systemVars) && !str_starts_with($key, '_') && !str_starts_with($key, '__')) {
+                // Convert objects to arrays, handle different data types
+                if (is_object($value)) {
+                    continue; // Skip objects for now
+                } elseif (is_array($value)) {
+                    $componentData[$key] = $value;
+                } elseif (is_scalar($value) || is_null($value)) {
+                    $componentData[$key] = $value;
+                }
+            }
+        }
+        
+        // Merge with additional data
+        $componentData = array_merge($componentData, $additionalData);
+        
+        // Add LiveIgniter specific properties
+        $componentData['loading'] = false;
+        $componentData['offline'] = false;
+        
+        // Convert to JSON and escape for HTML
+        $jsonData = json_encode($componentData, JSON_HEX_QUOT | JSON_HEX_APOS);
+        
+        return " x-data='{$jsonData}'";
+    }
+}
+
+if (!function_exists('live_component_data')) {
+    /**
+     * Extract component properties as JSON for x-data
+     * More explicit version that takes variables as parameters
+     * 
+     * @param array $properties Associative array of properties
+     * @param array $additionalData Additional data to merge
+     * @return string HTML x-data attribute
+     */
+    function live_component_data(array $properties, array $additionalData = []): string
+    {
+        // Merge properties with additional data
+        $data = array_merge($properties, $additionalData);
+        
+        // Add LiveIgniter specific properties
+        $data['loading'] = false;
+        $data['offline'] = false;
+        
+        // Convert to JSON and escape for HTML
+        $jsonData = json_encode($data, JSON_HEX_QUOT | JSON_HEX_APOS);
+        
+        return " x-data='{$jsonData}'";
+    }
+}
+
 // New Alpine.js x-igniter-* directive helpers
 if (!function_exists('live_igniter')) {
     /**
